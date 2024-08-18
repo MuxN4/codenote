@@ -4,13 +4,11 @@
 
 <script>
 import { ref, onMounted, watch, onUnmounted } from 'vue'
-import { EditorState, basicSetup } from '@codemirror/basic-setup'
-import { EditorView, keymap } from '@codemirror/view'
-import { indentWithTab } from '@codemirror/commands'
-import { javascript } from '@codemirror/lang-javascript'
-import { python } from '@codemirror/lang-python'
-import { css } from '@codemirror/lang-css'
-import { html } from '@codemirror/lang-html'
+import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup"
+import { javascript } from "@codemirror/lang-javascript"
+import { python } from "@codemirror/lang-python"
+import { css } from "@codemirror/lang-css"
+import { html } from "@codemirror/lang-html"
 
 export default {
   name: 'CodeEditor',
@@ -44,7 +42,6 @@ export default {
         doc: props.modelValue,
         extensions: [
           basicSetup,
-          keymap.of([indentWithTab]),
           getLanguage(props.language),
           EditorView.updateListener.of((v) => {
             if (v.docChanged) {
@@ -93,10 +90,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .code-editor {
   height: 100%;
   width: 100%;
   border: 1px solid #ccc;
 }
+
+.cm-editor { height: 100%; }
 </style>
