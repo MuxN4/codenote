@@ -7,12 +7,12 @@
         <option value="javascript">JavaScript</option>
         <option value="python">Python</option>
         <option value="css">CSS</option>
-        <option value="htmlmixed">HTML</option>
+        <option value="html">HTML</option>
       </select>
       <button @click="saveNote">Save</button>
     </div>
     <CodeEditor
-      v-model:code="code"
+      v-model="code"
       :language="language"
     />
   </div>
