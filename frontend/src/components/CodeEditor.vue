@@ -1,14 +1,15 @@
 <template>
-  <div class="code-editor" ref="editorRef"></div>
+  <textarea ref="textarea"></textarea>
 </template>
 
 <script>
 import { ref, onMounted, watch, onUnmounted } from 'vue'
-import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup"
-import { javascript } from "@codemirror/lang-javascript"
-import { python } from "@codemirror/lang-python"
-import { css } from "@codemirror/lang-css"
-import { html } from "@codemirror/lang-html"
+import CodeMirror from 'codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/python/python.js'
+import 'codemirror/mode/css/css.js'
+import 'codemirror/mode/htmlmixed/htmlmixed.js'
 
 export default {
   name: 'CodeEditor',
@@ -24,78 +25,62 @@ export default {
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
-    const editorRef = ref(null)
-    let view = null
+    const textarea = ref(null)
+    let editor = null
 
-    const getLanguage = (lang) => {
+    const getMode = (lang) => {
       switch (lang) {
-        case 'javascript': return javascript()
-        case 'python': return python()
-        case 'css': return css()
-        case 'html': return html()
-        default: return javascript()
+        case 'javascript': return 'javascript'
+        case 'python': return 'python'
+        case 'css': return 'css'
+        case 'html': return 'htmlmixed'
+        default: return 'javascript'
       }
     }
 
-    const createEditor = () => {
-      const state = EditorState.create({
-        doc: props.modelValue,
-        extensions: [
-          basicSetup,
-          getLanguage(props.language),
-          EditorView.updateListener.of((v) => {
-            if (v.docChanged) {
-              emit('update:modelValue', v.state.doc.toString())
-            }
-          })
-        ]
-      })
-
-      view = new EditorView({
-        state,
-        parent: editorRef.value
-      })
-    }
-
     onMounted(() => {
-      createEditor()
+      editor = CodeMirror.fromTextArea(textarea.value, {
+        lineNumbers: true,
+        mode: getMode(props.language),
+        theme: 'default',
+        viewportMargin: Infinity
+      })
+
+      editor.on('change', () => {
+        emit('update:modelValue', editor.getValue())
+      })
+
+      editor.setValue(props.modelValue)
     })
 
     watch(() => props.language, (newLang) => {
-      if (view) {
-        view.dispatch({
-          effects: EditorState.reconfigure.of([getLanguage(newLang)])
-        })
+      if (editor) {
+        editor.setOption('mode', getMode(newLang))
       }
     })
 
     watch(() => props.modelValue, (newValue) => {
-      if (view && newValue !== view.state.doc.toString()) {
-        view.dispatch({
-          changes: { from: 0, to: view.state.doc.length, insert: newValue }
-        })
+      if (editor && newValue !== editor.getValue()) {
+        editor.setValue(newValue)
       }
     })
 
     onUnmounted(() => {
-      if (view) {
-        view.destroy()
+      if (editor) {
+        editor.toTextArea()
       }
     })
 
     return {
-      editorRef
+      textarea
     }
   }
 }
 </script>
 
 <style>
-.code-editor {
-  height: 100%;
-  width: 100%;
-  border: 1px solid #ccc;
+.CodeMirror {
+  height: auto;
+  border: 1px solid #ddd;
 }
-
-.cm-editor { height: 100%; }
 </style>
