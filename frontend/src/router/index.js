@@ -19,7 +19,7 @@ const routes = [
     component: () => import('../views/Signup.vue')
   },
   {
-    path: '/editor',
+    path: '/editor/:id?',
     name: 'Editor',
     component: () => import('../views/Editor.vue'),
     meta: { requiresAuth: true }
