@@ -4,11 +4,20 @@ import pb from '../pocketbase'
 export default createStore({
   state: {
     user: null,
+    editorSettings: {
+      theme: 'default',
+      fontSize: 14,
+      tabSize: 4,
+      lineWrapping: false
+    }
   },
   mutations: {
     setUser(state, user) {
       state.user = user
     },
+    setEditorSettings(state, settings) {
+      state.editorSettings = settings
+    }
   },
   actions: {
     async login({ commit }, { email, password }) {
@@ -47,6 +56,14 @@ export default createStore({
         commit('setUser', null)
       }
     },
+    async loadEditorSettings({ commit, state }) {
+      try {
+        const userSettings = await pb.collection('user_settings').getFirstListItem(`user="${state.user.id}"`)
+        commit('setEditorSettings', userSettings.settings)
+      } catch (error) {
+        console.error('Error loading editor settings:', error)
+      }
+    }
   },
   getters: {
     isAuthenticated: (state) => !!state.user,
