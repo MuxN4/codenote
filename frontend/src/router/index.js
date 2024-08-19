@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import Settings from '../views/Settings.vue'
 import store from '../store'
 
 const routes = [
@@ -22,6 +23,12 @@ const routes = [
     path: '/editor/:id?',
     name: 'Editor',
     component: () => import('../views/Editor.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
     meta: { requiresAuth: true }
   }
 ]
