@@ -1,14 +1,20 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link v-if="!isAuthenticated" to="/login">Login</router-link> |
-      <router-link v-if="!isAuthenticated" to="/signup">Signup</router-link> |
-      <router-link v-if="isAuthenticated" to="/editor">Editor</router-link> |
-      <router-link v-if="isAuthenticated" to="/settings">Settings</router-link> |
-      <a v-if="isAuthenticated" href="#" @click.prevent="handleLogout">Logout</a>
-    </nav>
-    <router-view/>
+    <header>
+      <nav class="container">
+        <router-link to="/" class="logo">CodeNote</router-link>
+        <div class="nav-links">
+          <router-link v-if="!isAuthenticated" to="/login">Login</router-link>
+          <router-link v-if="!isAuthenticated" to="/signup">Signup</router-link>
+          <router-link v-if="isAuthenticated" to="/editor">Editor</router-link>
+          <router-link v-if="isAuthenticated" to="/settings">Settings</router-link>
+          <a v-if="isAuthenticated" href="#" @click.prevent="handleLogout">Logout</a>
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      <router-view/>
+    </main>
   </div>
 </template>
 
@@ -37,25 +43,51 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<style>
+@import './assets/styles/global.css';
+
+header {
+  background-color: var(--secondary-color);
+  padding: 15px 0;
 }
 
 nav {
-  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 </style>
