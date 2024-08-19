@@ -5,6 +5,7 @@
       <router-link v-if="!isAuthenticated" to="/login">Login</router-link> |
       <router-link v-if="!isAuthenticated" to="/signup">Signup</router-link> |
       <router-link v-if="isAuthenticated" to="/editor">Editor</router-link> |
+      <router-link v-if="isAuthenticated" to="/settings">Settings</router-link> |
       <a v-if="isAuthenticated" href="#" @click.prevent="handleLogout">Logout</a>
     </nav>
     <router-view/>
