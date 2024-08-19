@@ -1,25 +1,10 @@
 <template>
-  <div>
-    <div class="editor-options">
-      <label>
-        Theme:
-        <select v-model="theme" @change="updateEditorOptions">
-          <option value="default">Default</option>
-          <option value="monokai">Monokai</option>
-          <option value="solarized">Solarized</option>
-        </select>
-      </label>
-      <label>
-        Font Size:
-        <input type="number" v-model="fontSize" @change="updateEditorOptions" min="8" max="24">
-      </label>
-    </div>
-    <textarea ref="textarea"></textarea>
-  </div>
+  <textarea ref="textarea"></textarea>
 </template>
 
 <script>
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted, computed } from 'vue'
+import { useStore } from 'vuex'
 import CodeMirror from 'codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/monokai.css'
@@ -43,10 +28,11 @@ export default {
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
+    const store = useStore()
     const textarea = ref(null)
     let editor = null
-    const theme = ref('default')
-    const fontSize = ref(14)
+
+    const editorSettings = computed(() => store.state.editorSettings)
 
     const getMode = (lang) => {
       switch (lang) {
@@ -60,8 +46,10 @@ export default {
 
     const updateEditorOptions = () => {
       if (editor) {
-        editor.setOption('theme', theme.value)
-        editor.getWrapperElement().style.fontSize = `${fontSize.value}px`
+        editor.setOption('theme', editorSettings.value.theme)
+        editor.setOption('tabSize', editorSettings.value.tabSize)
+        editor.setOption('lineWrapping', editorSettings.value.lineWrapping)
+        editor.getWrapperElement().style.fontSize = `${editorSettings.value.fontSize}px`
       }
     }
 
@@ -69,7 +57,9 @@ export default {
       editor = CodeMirror.fromTextArea(textarea.value, {
         lineNumbers: true,
         mode: getMode(props.language),
-        theme: theme.value,
+        theme: editorSettings.value.theme,
+        tabSize: editorSettings.value.tabSize,
+        lineWrapping: editorSettings.value.lineWrapping,
         viewportMargin: Infinity
       })
 
@@ -78,7 +68,7 @@ export default {
       })
 
       editor.setValue(props.modelValue)
-      editor.getWrapperElement().style.fontSize = `${fontSize.value}px`
+      editor.getWrapperElement().style.fontSize = `${editorSettings.value.fontSize}px`
     })
 
     watch(() => props.language, (newLang) => {
@@ -93,6 +83,8 @@ export default {
       }
     })
 
+    watch(editorSettings, updateEditorOptions, { deep: true })
+
     onUnmounted(() => {
       if (editor) {
         editor.toTextArea()
@@ -100,22 +92,13 @@ export default {
     })
 
     return {
-      textarea,
-      theme,
-      fontSize,
-      updateEditorOptions
+      textarea
     }
   }
 }
 </script>
 
-<style scoped>
-.editor-options {
-  margin-bottom: 10px;
-}
-.editor-options label {
-  margin-right: 10px;
-}
+<style>
 .CodeMirror {
   height: auto;
   border: 1px solid #ddd;
