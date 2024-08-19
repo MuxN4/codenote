@@ -1,25 +1,27 @@
 <template>
   <div class="editor">
-    <h2>Code Editor</h2>
-    <div class="editor-controls">
-      <input v-model="fileName" placeholder="File name" />
-      <select v-model="language">
-        <option value="javascript">JavaScript</option>
-        <option value="python">Python</option>
-        <option value="css">CSS</option>
-        <option value="html">HTML</option>
-      </select>
-      <select v-model="selectedFolder">
-        <option value="">No Folder</option>
-        <option v-for="folder in folders" :key="folder.id" :value="folder.id">
-          {{ folder.name }}
-        </option>
-      </select>
-      <button @click="saveNote">Save</button>
+    <div class="editor-header">
+      <input v-model="fileName" placeholder="File name" class="input file-name">
+      <div class="editor-controls">
+        <select v-model="language" class="select">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="css">CSS</option>
+          <option value="html">HTML</option>
+        </select>
+        <select v-model="selectedFolder" class="select">
+          <option value="">No Folder</option>
+          <option v-for="folder in folders" :key="folder.id" :value="folder.id">
+            {{ folder.name }}
+          </option>
+        </select>
+        <button @click="saveNote" class="btn">Save</button>
+      </div>
     </div>
     <CodeEditor
       v-model="code"
       :language="language"
+      class="code-editor"
     />
   </div>
 </template>
@@ -116,19 +118,36 @@ export default {
 .editor {
   display: flex;
   flex-direction: column;
-  height: 80vh;
-  padding: 20px;
+  height: calc(100vh - 100px);
 }
 
-.editor-controls {
+.editor-header {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.editor-controls input,
-.editor-controls select,
-.editor-controls button {
-  padding: 5px 10px;
+.file-name {
+  flex-grow: 1;
+}
+
+.editor-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.code-editor {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+@media (max-width: 768px) {
+  .editor-header {
+    flex-direction: column;
+  }
+
+  .editor-controls {
+    flex-wrap: wrap;
+  }
 }
 </style>
