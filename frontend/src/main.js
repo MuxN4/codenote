@@ -6,5 +6,8 @@ import store from './store'
 const app = createApp(App)
 
 store.dispatch('fetchUser').then(() => {
+  if (store.getters.isAuthenticated) {
+    store.dispatch('loadEditorSettings')
+  }
   app.use(store).use(router).mount('#app')
 })
